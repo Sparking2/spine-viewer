@@ -8,39 +8,50 @@ export function draw(app: Application) {
   app.stage.addChild(text);
   text.position.set(width * 0.025, height * 0.05);
 
-  let animationsContainer = new Container();
-  app.stage.addChild(animationsContainer);
-  animationsContainer.position.set(width * 0.73, 25);
+  app.stage.addChild(
+    drawAnimationsPanel(width, height, ["walking", "running", "dead"])
+  );
+}
 
-  let animationsContainerWith = width * 0.25;
-  let animationsContainerHeight = height - 50;
+function drawAnimationsPanel(
+  width: number,
+  height: number,
+  animations: string[] = ["hello"]
+): Container {
+  let mainContainer = new Container();
+  mainContainer.position.set(width * 0.73, 25);
+
+  let areaWith = width * 0.25;
+  let areaHeight = height - 50;
 
   let bg = new Graphics();
-  animationsContainer.addChild(bg);
   bg.beginFill(0x000c66);
-  bg.drawRect(0, 0, animationsContainerWith, animationsContainerHeight);
+  bg.drawRect(0, 0, areaWith, areaHeight);
   bg.endFill();
+  mainContainer.addChild(bg);
 
-  animationsContainer.addChild(bg);
+  const spacing = 10;
+  const buttonAreaWidth = areaWith * 0.8;
+  const buttonAreaHeight = areaHeight / animations.length + 1;
+  const buttonLeftMargin = buttonAreaWidth * 0.125;
 
-  let spacing = animationsContainerHeight / 5;
-
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < animations.length; i++) {
     let buttonContainer = new Container();
-    let button = new Graphics();
-    buttonContainer.addChild(button);
-    button.beginFill(0x7ec8e3);
-    button.drawRect(
-      animationsContainerWith * 0.1,
-      spacing * i,
-      animationsContainerWith * 0.8,
-      animationsContainerHeight / 6
+    let buttonBg = new Graphics();
+    buttonBg.beginFill(0x7ec8e3);
+    buttonBg.drawRect(0, 0, buttonAreaWidth, buttonAreaHeight);
+    buttonBg.endFill();
+    buttonContainer.addChild(buttonBg);
+    buttonContainer.position.set(
+      buttonLeftMargin,
+      (buttonAreaHeight + spacing) * i
     );
-    let label = new Text(`animation_${i}`);
-    buttonContainer.addChild(label);
-    label.position.set(0, buttonContainer.height / 2);
-    button.endFill();
 
-    animationsContainer.addChild(buttonContainer);
+    const label = new Text(`${animations[i]}`);
+    label.position.set(buttonAreaWidth * 0.1, buttonAreaHeight * 0.3);
+    buttonContainer.addChild(label);
+
+    mainContainer.addChild(buttonContainer);
   }
+  return mainContainer;
 }
