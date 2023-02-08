@@ -5,9 +5,16 @@ import { ISkeletonData, Spine, TextureAtlas } from "pixi-spine";
 import * as SpineRuntime from "@pixi-spine/runtime-4.1";
 import * as ReadPromises from "./readPromises";
 import * as UI from "./ui";
+import { SpineData } from "./dataContainer";
 
 let currentSpine: Spine | null = null;
-let currentAnimationArray: string[] | null = null;
+
+let loadedSpineData: SpineData = {
+  fileName: "",
+  animations: [],
+  skins: [],
+  activeAnimationIndex: 0,
+};
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
@@ -60,6 +67,7 @@ async function dropHandler(ev: DragEvent) {
       switch (fieType) {
         case "json":
           {
+            loadedSpineData.fileName = file.name.split(".")[0];
             promiseSkeleton = ReadPromises.promiseReadAsText(file);
           }
           break;
@@ -87,19 +95,27 @@ async function dropHandler(ev: DragEvent) {
     callback(BaseTexture.from(image));
   });
 
-  console.log(rawSkeletonData);
-  console.log(spineAtlas);
-
   let spineAtlasLoader = new SpineRuntime.AtlasAttachmentLoader(spineAtlas);
   let spineJsonParser = new SpineRuntime.SkeletonJson(spineAtlasLoader);
   spineJsonParser.scale = 0.25;
   let spineData = spineJsonParser.readSkeletonData(rawSkeletonData);
   if (currentSpine != null) currentSpine.destroy();
   currentSpine = new Spine(spineData as ISkeletonData);
-  currentAnimationArray = currentSpine.spineData.animations.map((x) => x.name);
-  currentSpine.state.setAnimation(0, currentAnimationArray[3], true);
+
+  loadedSpineData.animations = currentSpine.spineData.animations.map(
+    (x) => x.name
+  );
+  loadedSpineData.skins = currentSpine.spineData.skins.map((x) => x.name);
+  loadedSpineData.activeAnimationIndex = 3;
+  currentSpine.state.setAnimation(
+    0,
+    loadedSpineData.animations[loadedSpineData.activeAnimationIndex],
+    true
+  );
   pixiApp.stage.addChild(currentSpine);
   currentSpine.position.set(view.width * 0.25, view.height * 0.5);
+
+  console.log(loadedSpineData);
 }
 
 const displayError = (error: string) => {
