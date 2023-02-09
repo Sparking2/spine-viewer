@@ -1,30 +1,38 @@
-import { Application, Container, Graphics, Text } from "pixi.js";
-import { SpineData } from "./dataContainer";
+import { Container, Graphics, Text } from "pixi.js";
+import { environmentData } from "./dataContainer";
+import { pixiApp } from "./main";
 
 let uiContainer: null | Container = null;
 
-export function draw(app: Application, data: SpineData) {
-  const width = app.view.width;
-  const height = app.view.height;
+export function draw() {
+  const width = pixiApp.view.width;
+  const height = pixiApp.view.height;
 
   if (uiContainer !== null) {
     uiContainer.removeChildren();
   } else {
     uiContainer = new Container();
-    app.stage.addChild(uiContainer);
+    pixiApp.stage.addChild(uiContainer);
   }
 
-  uiContainer.addChild(drawFileName(width, height, data.fileName));
-  uiContainer.addChild(
-    drawAnimationsPanel(
-      width,
-      height,
-      data.animations,
-      data.actions.get("changeAnimation")
-    )
-  );
-  uiContainer.addChild(drawSkinsPanel(width, height, data.skins));
-  uiContainer.addChild(drawPlayButton(width, height, data.actions.get("play")));
+  uiContainer.addChild(drawFileName(width, height, environmentData.fileName));
+
+  const changeAnimFunc = environmentData.actions.get("changeAnimation");
+  if (changeAnimFunc != undefined)
+    uiContainer.addChild(
+      drawAnimationsPanel(
+        width,
+        height,
+        environmentData.animations,
+        changeAnimFunc
+      )
+    );
+
+  uiContainer.addChild(drawSkinsPanel(width, height, environmentData.skins));
+
+  const playFunc = environmentData.actions.get("play");
+  if (playFunc != undefined)
+    uiContainer.addChild(drawPlayButton(width, height, playFunc));
 }
 
 function drawPlayButton(
@@ -38,7 +46,8 @@ function drawPlayButton(
   bg.drawRect(0, 0, width * 0.25, height * 0.1);
   bg.endFill();
   mainContainer.addChild(bg);
-  let label = new Text("PAUSE/PLAY");
+  let msg = environmentData.isAnimationPlaying ? "PAUSE" : "PLAY";
+  let label = new Text(msg);
   label.position.set(mainContainer.width * 0.1, mainContainer.height * 0.2);
   mainContainer.addChild(label);
   mainContainer.position.set(width * 0.725, height - 100);
@@ -81,7 +90,10 @@ function drawAnimationsPanel(
   for (let i = 0; i < animations.length; i++) {
     let buttonContainer = new Container();
     let buttonBg = new Graphics();
-    buttonBg.beginFill(0x7ec8e3);
+
+    let color = environmentData.activeAnimationIndex == i ? 0x162226 : 0x7ec8e3;
+
+    buttonBg.beginFill(color);
     buttonBg.drawRect(0, 0, buttonAreaWidth, buttonAreaHeight);
     buttonBg.endFill();
     buttonContainer.addChild(buttonBg);
