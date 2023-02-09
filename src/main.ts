@@ -14,6 +14,11 @@ let loadedSpineData: SpineData = {
   animations: [],
   skins: [],
   activeAnimationIndex: 0,
+  isAnimationPlaying: true,
+  actions: new Map([
+    ["play", playClicked],
+    ["changeAnimation", animationClicked],
+  ]),
 };
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
@@ -34,7 +39,7 @@ const pixiApp = new Application({
   height: window.innerHeight / 2,
 });
 
-UI.draw(pixiApp);
+UI.draw(pixiApp, loadedSpineData);
 
 function dragHandler(ev: Event) {
   ev.preventDefault();
@@ -115,7 +120,25 @@ async function dropHandler(ev: DragEvent) {
   pixiApp.stage.addChild(currentSpine);
   currentSpine.position.set(view.width * 0.25, view.height * 0.5);
 
+  UI.draw(pixiApp, loadedSpineData);
+
   console.log(loadedSpineData);
+}
+
+function playClicked() {
+  if (currentSpine === null) return;
+  loadedSpineData.isAnimationPlaying = !loadedSpineData.isAnimationPlaying;
+  currentSpine.state.timeScale = loadedSpineData.isAnimationPlaying ? 1.0 : 0.0;
+}
+
+function animationClicked(index: number) {
+  if (currentSpine === null) return;
+  currentSpine.state.clearTracks();
+  currentSpine.state.setAnimation(
+    index,
+    loadedSpineData.animations[index],
+    true
+  );
 }
 
 const displayError = (error: string) => {

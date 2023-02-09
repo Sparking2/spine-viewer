@@ -3,4 +3,6 @@ export interface SpineData {
   animations: string[];
   activeAnimationIndex: number;
   skins: string[];
+  actions: Map<string, Function>;
+  isAnimationPlaying: boolean;
 }
