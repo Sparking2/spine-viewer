@@ -2,17 +2,16 @@ import {
   BitmapFont,
   BitmapText,
   Container,
-  FederatedMouseEvent,
   Graphics,
   Text,
   Ticker,
 } from "pixi.js";
 import { environmentData } from "./dataContainer";
 import { pixiApp, view } from "./main";
+import { onDragEnd, onDragMove, onDragStart } from "./ui-interactions";
 
 let uiContainer: Container | null = null;
 let fpsLabel: BitmapText | null = null;
-// let errorPanel: Container | null = null;
 
 export function init() {
   BitmapFont.from(
@@ -260,33 +259,6 @@ export function drawSlider() {
   mainContainer.addChild(sliderKnob);
 
   return mainContainer;
-}
-
-function onDragStart(event: FederatedMouseEvent) {
-  let target: any = event.currentTarget;
-  target.dragging = true;
-  target = event.currentTarget as Graphics;
-  target.alpha = 0.5;
-}
-function onDragEnd(event: FederatedMouseEvent) {
-  let target: any = event.currentTarget;
-  target.dragging = false;
-  target = event.currentTarget as Graphics;
-  target.alpha = 1;
-}
-function onDragMove(event: FederatedMouseEvent) {
-  let target: any = event.currentTarget;
-  if (!target.dragging) return;
-  let parentWidth = view.width * 0.5;
-
-  target = event.currentTarget as Graphics;
-  let curPos = target.position;
-  curPos.x += event.movementX;
-
-  if (curPos.x < 0) curPos.x = 0;
-  if (curPos.x > parentWidth) curPos.x = parentWidth;
-
-  target.position.set(curPos.x, curPos.y);
 }
 
 export function drawFPS(_: number) {

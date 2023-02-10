@@ -61,3 +61,8 @@ export const setActiveSpine = (x: Spine) => {
     view.height * 0.5
   );
 };
+
+export const updateAnimationSpeed = (speed: number) => {
+  if (!environmentData.activeSpine) return;
+  environmentData.activeSpine.state.timeScale = speed;
+};
