@@ -1,6 +1,6 @@
 import "pixi-spine";
 
-import { Application } from "pixi.js";
+import { Application, Ticker } from "pixi.js";
 import * as UI from "./ui";
 import * as LoadEvents from "./load-events";
 
@@ -25,7 +25,12 @@ function init() {
     height: window.innerHeight / 2,
   });
 
+  UI.init();
   UI.draw();
+
+  Ticker.shared.add(UI.drawFPS);
+
+  UI.showErrorPanel("ERROR WITH...");
 }
 
 init();

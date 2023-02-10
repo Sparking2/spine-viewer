@@ -11,7 +11,7 @@ export interface EnvironmentData {
   animations: string[];
   activeAnimationIndex: number;
   skins: string[];
-  activeSkin: number;
+  activeSkinIndex: number;
   actions: Map<string, Function>;
   isAnimationPlaying: boolean;
   activeSpine: Spine | null;
@@ -22,7 +22,7 @@ export let environmentData: EnvironmentData = {
   animations: [],
   activeAnimationIndex: 0,
   skins: [],
-  activeSkin: 0,
+  activeSkinIndex: 0,
   isAnimationPlaying: true,
   actions: new Map([
     ["play", playButtonClicked],

@@ -25,6 +25,7 @@ export const animationButtonClicked = (index: number) => {
 
 export const clickedSkinButton = (index: number) => {
   if (environmentData.activeSpine === null) return;
-
-  environmentData.activeSkin = index;
+  environmentData.activeSkinIndex = index;
+  environmentData.activeSpine.skeleton.skin =
+    environmentData.activeSpine.spineData.skins[index];
 };

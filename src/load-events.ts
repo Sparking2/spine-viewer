@@ -72,6 +72,8 @@ export async function dropHandler(ev: DragEvent) {
   setActiveSpine(new Spine(spineData as ISkeletonData));
 
   UI.draw();
+
+  UI.showErrorPanel("Can't open files");
 }
 
 const displayConsoleError = (error: string) => {

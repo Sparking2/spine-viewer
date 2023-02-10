@@ -1,8 +1,34 @@
-import { Container, Graphics, Text } from "pixi.js";
+import {
+  BitmapFont,
+  BitmapText,
+  Container,
+  Graphics,
+  Text,
+  Ticker,
+} from "pixi.js";
 import { environmentData } from "./dataContainer";
-import { pixiApp } from "./main";
+import { pixiApp, view } from "./main";
 
-let uiContainer: null | Container = null;
+let uiContainer: Container | null = null;
+let fpsLabel: BitmapText | null = null;
+// let errorPanel: Container | null = null;
+
+export function init() {
+  BitmapFont.from(
+    "TmpFont",
+    {
+      fill: "#333333",
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+    {
+      chars: [["a", "z"], ["0", "9"], ["A", "Z"], ".,:?><"],
+    }
+  );
+  fpsLabel = new BitmapText("FPS: 0", { fontName: "TmpFont" });
+  pixiApp.stage.addChild(fpsLabel);
+  fpsLabel.position.set(view.width * 0.825, view.height * 0.05);
+}
 
 export function draw() {
   const width = pixiApp.view.width;
@@ -148,7 +174,8 @@ function drawSkinsPanel(
   for (let i = 0; i < skins.length; i++) {
     let buttonContainer = new Container();
     let buttonBg = new Graphics();
-    buttonBg.beginFill(0x7ec8e3);
+    let color = environmentData.activeSkinIndex == i ? 0x162226 : 0x7ec8e3;
+    buttonBg.beginFill(color);
     buttonBg.drawRect(0, 0, buttonAreaWidth, buttonAreaHeight);
     buttonBg.endFill();
     buttonContainer.addChild(buttonBg);
@@ -156,7 +183,6 @@ function drawSkinsPanel(
       (buttonAreaWidth + spacing) * i,
       areaHeight * 0.25
     );
-
     const label = new Text(`${skins[i]}`);
     label.position.set(buttonAreaWidth * 0.1, buttonAreaHeight * 0.3);
     buttonContainer.addChild(label);
@@ -165,4 +191,48 @@ function drawSkinsPanel(
   }
 
   return mainContainer;
+}
+
+export function showErrorPanel(msg: string) {
+  const mainContainer = new Container();
+
+  const bg = new Graphics();
+  bg.beginFill(0xffffff);
+  bg.drawRect(0, 0, view.width * 0.5, view.height * 0.5);
+  bg.endFill();
+  mainContainer.addChild(bg);
+  bg.position.set(view.width * 0.25, view.height * 0.25);
+
+  const txt = new Text(msg);
+  mainContainer.addChild(txt);
+  txt.position.set(mainContainer.width * 0.5, mainContainer.height * 0.5);
+
+  const closeButton = new Graphics();
+  closeButton.beginFill(0x00ffff);
+  closeButton.drawRect(
+    0,
+    0,
+    mainContainer.width * 0.25,
+    mainContainer.height * 0.25
+  );
+  closeButton.endFill();
+  closeButton.position.set(
+    mainContainer.width * 0.9,
+    mainContainer.height * 1.1
+  );
+  closeButton.interactive = true;
+  closeButton.on("click", () => {
+    mainContainer.destroy();
+  });
+  const closeLabel = new Text("Close");
+  closeLabel.position.set(20, 10);
+  closeButton.addChild(closeLabel);
+  mainContainer.addChild(closeButton);
+
+  pixiApp.stage.addChild(mainContainer);
+}
+
+export function drawFPS(_: number) {
+  if (fpsLabel === null) return;
+  fpsLabel.text = `FPS: ${Math.trunc(Ticker.shared.FPS)}`;
 }
