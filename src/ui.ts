@@ -2,6 +2,7 @@ import {
   BitmapFont,
   BitmapText,
   Container,
+  FederatedMouseEvent,
   Graphics,
   Text,
   Ticker,
@@ -59,6 +60,8 @@ export function draw() {
   const playFunc = environmentData.actions.get("play");
   if (playFunc != undefined)
     uiContainer.addChild(drawPlayButton(width, height, playFunc));
+
+  uiContainer.addChild(drawSlider());
 }
 
 function drawPlayButton(
@@ -230,6 +233,60 @@ export function showErrorPanel(msg: string) {
   mainContainer.addChild(closeButton);
 
   pixiApp.stage.addChild(mainContainer);
+}
+
+export function drawSlider() {
+  let mainContainer = new Container();
+
+  let bg = new Graphics();
+  bg.beginFill(0xff00ff);
+  bg.drawRect(0, 0, view.width * 0.5, view.height * 0.02);
+  bg.endFill();
+  mainContainer.addChild(bg);
+
+  mainContainer.pivot.set(mainContainer.width / 2, 0);
+  mainContainer.position.set(view.width / 2, 10);
+
+  let sliderKnob = new Graphics();
+  sliderKnob.beginFill(0xff0000);
+  sliderKnob.drawCircle(0, 0, view.height * 0.021);
+  sliderKnob.endFill();
+  sliderKnob.position.set(mainContainer.width / 2, mainContainer.height / 2);
+  sliderKnob.interactive = true;
+  sliderKnob
+    .on("mousedown", onDragStart)
+    .on("mouseup", onDragEnd)
+    .on("mousemove", onDragMove);
+  mainContainer.addChild(sliderKnob);
+
+  return mainContainer;
+}
+
+function onDragStart(event: FederatedMouseEvent) {
+  let target: any = event.currentTarget;
+  target.dragging = true;
+  target = event.currentTarget as Graphics;
+  target.alpha = 0.5;
+}
+function onDragEnd(event: FederatedMouseEvent) {
+  let target: any = event.currentTarget;
+  target.dragging = false;
+  target = event.currentTarget as Graphics;
+  target.alpha = 1;
+}
+function onDragMove(event: FederatedMouseEvent) {
+  let target: any = event.currentTarget;
+  if (!target.dragging) return;
+  let parentWidth = view.width * 0.5;
+
+  target = event.currentTarget as Graphics;
+  let curPos = target.position;
+  curPos.x += event.movementX;
+
+  if (curPos.x < 0) curPos.x = 0;
+  if (curPos.x > parentWidth) curPos.x = parentWidth;
+
+  target.position.set(curPos.x, curPos.y);
 }
 
 export function drawFPS(_: number) {
