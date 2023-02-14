@@ -3,6 +3,7 @@ import "pixi-spine";
 import { Application, Ticker } from "pixi.js";
 import * as UI from "./ui";
 import * as LoadEvents from "./load-events";
+import { mainBG } from "./colors";
 
 export let pixiApp: Application;
 export let view: HTMLCanvasElement;
@@ -20,7 +21,7 @@ function init() {
     view: view,
     resolution: window.devicePixelRatio || 1,
     autoDensity: true,
-    backgroundColor: 0x808080,
+    backgroundColor: mainBG,
     width: window.innerWidth / 2,
     height: window.innerHeight / 2,
   });

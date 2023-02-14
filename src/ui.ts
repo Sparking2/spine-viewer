@@ -9,6 +9,7 @@ import {
 import { environmentData } from "./dataContainer";
 import { pixiApp, view } from "./main";
 import { onDragEnd, onDragMove, onDragStart } from "./ui-interactions";
+import { buttonBGNormal, buttonBGSelected, panelBG } from "./colors";
 
 let uiContainer: Container | null = null;
 let fpsLabel: BitmapText | null = null;
@@ -70,15 +71,18 @@ function drawPlayButton(
 ): Container {
   let mainContainer = new Container();
   let bg = new Graphics();
-  bg.beginFill(0xffff00);
-  bg.drawRect(0, 0, width * 0.25, height * 0.1);
+  bg.beginFill(
+    environmentData.isAnimationPlaying ? buttonBGSelected : buttonBGNormal
+  );
+  bg.drawRect(0, 0, width * 0.25, height * 0.2);
   bg.endFill();
   mainContainer.addChild(bg);
   let msg = environmentData.isAnimationPlaying ? "PAUSE" : "PLAY";
   let label = new Text(msg);
-  label.position.set(mainContainer.width * 0.1, mainContainer.height * 0.2);
+  label.anchor.set(0.5, 0.5);
+  label.position.set(mainContainer.width * 0.5, mainContainer.height * 0.5);
   mainContainer.addChild(label);
-  mainContainer.position.set(width * 0.725, height - 100);
+  mainContainer.position.set(width * 0.73, height * 0.75);
 
   mainContainer.interactive = true;
   mainContainer.on("mousedown", () => {
@@ -101,7 +105,7 @@ function drawAnimationsPanel(
   let areaHeight = height - 200;
 
   let bg = new Graphics();
-  bg.beginFill(0x000c66);
+  bg.beginFill(panelBG);
   bg.drawRect(0, 0, areaWith, areaHeight);
   bg.endFill();
   mainContainer.addChild(bg);
@@ -119,7 +123,10 @@ function drawAnimationsPanel(
     let buttonContainer = new Container();
     let buttonBg = new Graphics();
 
-    let color = environmentData.activeAnimationIndex == i ? 0x162226 : 0x7ec8e3;
+    let color =
+      environmentData.activeAnimationIndex == i
+        ? buttonBGSelected
+        : buttonBGNormal;
 
     buttonBg.beginFill(color);
     buttonBg.drawRect(0, 0, buttonAreaWidth, buttonAreaHeight);
@@ -131,7 +138,8 @@ function drawAnimationsPanel(
     );
 
     const label = new Text(`${animations[i]}`);
-    label.position.set(buttonAreaWidth * 0.1, buttonAreaHeight * 0.15);
+    label.anchor.set(0.5, 0.5);
+    label.position.set(buttonAreaWidth * 0.5, buttonAreaHeight * 0.5);
     buttonContainer.addChild(label);
 
     buttonContainer.interactive = true;
@@ -157,10 +165,10 @@ function drawSkinsPanel(
 ): Container {
   let mainContainer = new Container();
   mainContainer.position.set(width * 0.025, height * 0.75);
-  let areaWith = width * 0.6;
+  let areaWith = width * 0.69;
   let areaHeight = height * 0.2;
   let bg = new Graphics();
-  bg.beginFill(0x000c66);
+  bg.beginFill(panelBG);
   bg.drawRect(0, 0, areaWith, areaHeight);
   bg.endFill();
   mainContainer.addChild(bg);
@@ -176,7 +184,8 @@ function drawSkinsPanel(
   for (let i = 0; i < skins.length; i++) {
     let buttonContainer = new Container();
     let buttonBg = new Graphics();
-    let color = environmentData.activeSkinIndex == i ? 0x162226 : 0x7ec8e3;
+    let color =
+      environmentData.activeSkinIndex == i ? buttonBGSelected : buttonBGNormal;
     buttonBg.beginFill(color);
     buttonBg.drawRect(0, 0, buttonAreaWidth, buttonAreaHeight);
     buttonBg.endFill();
@@ -186,7 +195,8 @@ function drawSkinsPanel(
       areaHeight * 0.25
     );
     const label = new Text(`${skins[i]}`);
-    label.position.set(buttonAreaWidth * 0.1, buttonAreaHeight * 0.3);
+    label.anchor.set(0.5, 0.5);
+    label.position.set(buttonAreaWidth * 0.5, buttonAreaHeight * 0.5);
     buttonContainer.addChild(label);
 
     mainContainer.addChild(buttonContainer);
@@ -238,8 +248,8 @@ export function drawSlider() {
   let mainContainer = new Container();
 
   let bg = new Graphics();
-  bg.beginFill(0xff00ff);
-  bg.drawRect(0, 0, view.width * 0.5, view.height * 0.02);
+  bg.beginFill(panelBG);
+  bg.drawRect(0, 0, view.width * 0.45, view.height * 0.02);
   bg.endFill();
   mainContainer.addChild(bg);
 
@@ -247,7 +257,7 @@ export function drawSlider() {
   mainContainer.position.set(view.width / 2, 10);
 
   let sliderKnob = new Graphics();
-  sliderKnob.beginFill(0xff0000);
+  sliderKnob.beginFill(buttonBGSelected);
   sliderKnob.drawCircle(0, 0, view.height * 0.021);
   sliderKnob.endFill();
   sliderKnob.position.set(mainContainer.width / 2, mainContainer.height / 2);

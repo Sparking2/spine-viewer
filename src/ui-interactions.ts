@@ -47,7 +47,7 @@ export function onDragEnd(event: FederatedMouseEvent) {
 export function onDragMove(event: FederatedMouseEvent) {
   let target: any = event.currentTarget;
   if (!target.dragging) return;
-  let parentWidth = view.width * 0.5;
+  let parentWidth = view.width * 0.45;
 
   target = event.currentTarget as Graphics;
   let curPos = target.position;
