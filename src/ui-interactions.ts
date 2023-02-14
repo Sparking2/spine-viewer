@@ -30,6 +30,8 @@ export const clickedSkinButton = (index: number) => {
   environmentData.activeSkinIndex = index;
   environmentData.activeSpine.skeleton.skin =
     environmentData.activeSpine.spineData.skins[index];
+
+  UI.draw();
 };
 
 export function onDragStart(event: FederatedMouseEvent) {

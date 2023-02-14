@@ -28,7 +28,8 @@ export function init() {
   );
   fpsLabel = new BitmapText("FPS: 0", { fontName: "TmpFont" });
   pixiApp.stage.addChild(fpsLabel);
-  fpsLabel.position.set(view.width * 0.825, view.height * 0.05);
+  fpsLabel.anchor.set(0.5, 0.5);
+  fpsLabel.position.set(view.width * 0.9, view.height * 0.015);
 }
 
 export function draw() {
@@ -55,13 +56,19 @@ export function draw() {
       )
     );
 
-  uiContainer.addChild(drawSkinsPanel(width, height, environmentData.skins));
+  const changeSkinFunc = environmentData.actions.get("changeSkin");
+  if (changeSkinFunc != undefined)
+    uiContainer.addChild(
+      drawSkinsPanel(width, height, environmentData.skins, changeSkinFunc)
+    );
 
   const playFunc = environmentData.actions.get("play");
   if (playFunc != undefined)
     uiContainer.addChild(drawPlayButton(width, height, playFunc));
 
   uiContainer.addChild(drawSlider());
+
+  if (fpsLabel) fpsLabel.position.set(view.width * 0.9, view.height * 0.015);
 }
 
 function drawPlayButton(
@@ -102,7 +109,7 @@ function drawAnimationsPanel(
   mainContainer.position.set(width * 0.73, 50);
 
   let areaWith = width * 0.25;
-  let areaHeight = height - 200;
+  let areaHeight = height * 0.65;
 
   let bg = new Graphics();
   bg.beginFill(panelBG);
@@ -161,7 +168,8 @@ function drawFileName(width: number, height: number, name: string) {
 function drawSkinsPanel(
   width: number,
   height: number,
-  skins: string[] = ["default", "test", "test2", "test5"]
+  skins: string[] = ["default", "test", "test2", "test5"],
+  callback: Function
 ): Container {
   let mainContainer = new Container();
   mainContainer.position.set(width * 0.025, height * 0.75);
@@ -199,6 +207,11 @@ function drawSkinsPanel(
     label.position.set(buttonAreaWidth * 0.5, buttonAreaHeight * 0.5);
     buttonContainer.addChild(label);
 
+    buttonContainer.interactive = true;
+    buttonContainer.on("mousedown", () => {
+      callback(i);
+    });
+
     mainContainer.addChild(buttonContainer);
   }
 
@@ -213,10 +226,13 @@ export function showErrorPanel(msg: string) {
   bg.drawRect(0, 0, view.width * 0.5, view.height * 0.5);
   bg.endFill();
   mainContainer.addChild(bg);
-  bg.position.set(view.width * 0.25, view.height * 0.25);
+  mainContainer.pivot.set(mainContainer.width / 2, mainContainer.height / 2);
+  mainContainer.position.set(view.width * 0.5, view.height * 0.5);
 
+  console.error(msg);
   const txt = new Text(msg);
   mainContainer.addChild(txt);
+  txt.pivot.set(txt.width / 2, txt.height / 2);
   txt.position.set(mainContainer.width * 0.5, mainContainer.height * 0.5);
 
   const closeButton = new Graphics();
@@ -224,20 +240,22 @@ export function showErrorPanel(msg: string) {
   closeButton.drawRect(
     0,
     0,
-    mainContainer.width * 0.25,
-    mainContainer.height * 0.25
+    mainContainer.width * 0.15,
+    mainContainer.height * 0.15
   );
   closeButton.endFill();
+  closeButton.pivot.set(closeButton.width / 2, closeButton.height / 2);
   closeButton.position.set(
-    mainContainer.width * 0.9,
-    mainContainer.height * 1.1
+    mainContainer.width * 0.5,
+    mainContainer.height * 0.8
   );
   closeButton.interactive = true;
   closeButton.on("click", () => {
     mainContainer.destroy();
   });
   const closeLabel = new Text("Close");
-  closeLabel.position.set(20, 10);
+  closeLabel.anchor.set(0.5, 0.5);
+  closeLabel.position.set(closeButton.width / 2, closeButton.height / 2);
   closeButton.addChild(closeLabel);
   mainContainer.addChild(closeButton);
 
